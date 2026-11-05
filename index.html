@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prepress PDF Viewer</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div id="app">
+
+    <!-- ── Site header (dandl.at) ───────────────────────────────── -->
+    <div class="site-header">
+      <a class="site-back" href="https://dandl.at" title="Back to dandl.at">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        <span>dandl.at</span>
+      </a>
+      <a class="site-logo-link" href="https://dandl.at" title="dandl.at">
+        <svg class="site-logo-svg" viewBox="0 0 100 100" width="44" height="44">
+          <circle cx="50" cy="50" r="46" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
+          <text x="50" y="57" text-anchor="middle"
+                font-family="Georgia,'Times New Roman',serif"
+                font-size="30" fill="#1a1a1a" letter-spacing="1">AD</text>
+          <text x="50" y="77" text-anchor="middle"
+                font-family="'Helvetica Neue',Arial,sans-serif"
+                font-size="7" fill="#666" letter-spacing="3.5">DANDL.AT</text>
+        </svg>
+      </a>
+      <span class="site-section">Prepress PDF Viewer</span>
+    </div>
+
+    <!-- ── Toolbar ──────────────────────────────────────────────── -->
+    <header class="toolbar">
+      <div class="toolbar-group">
+        <span class="app-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </span>
+        <span class="app-title">Prepress PDF Viewer</span>
+      </div>
+
+      <div class="toolbar-group">
+        <label class="btn btn-open" title="Open PDF (or drag &amp; drop onto the canvas)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Open PDF
+          <input type="file" id="file-input" accept=".pdf" hidden>
+        </label>
+        <a class="btn" href="mupdf.html" title="Exact spot colour separations rendered with MuPDF (beta)">Separations (MuPDF beta)</a>
+      </div>
+
+      <div class="toolbar-group" id="page-controls">
+        <button id="prev-page" class="btn btn-icon" title="Previous page (←)" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <span id="page-info" class="page-info">— / —</span>
+        <button id="next-page" class="btn btn-icon" title="Next page (→)" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="toolbar-group">
+        <button id="zoom-out" class="btn btn-icon" title="Zoom out (−)" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
+        </button>
+        <span id="zoom-level" class="zoom-level">100%</span>
+        <button id="zoom-in" class="btn btn-icon" title="Zoom in (+)" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
+        </button>
+        <button id="zoom-fit" class="btn btn-text" title="Fit page width (F)" disabled>Fit</button>
+      </div>
+
+      <div class="toolbar-group">
+        <button id="eyedropper-btn" class="btn btn-icon" title="Eyedropper — measure ink density (D)" disabled>
+          <!-- pipette / ink-dropper icon -->
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m2 22 1-1h3l9-9"/>
+            <path d="M3 21v-3l9-9"/>
+            <path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="toolbar-group">
+        <button id="opp-btn" class="btn btn-text" title="Overprint Preview — print-intent rendering approximation (O)" disabled>OPP</button>
+      </div>
+
+      <div class="toolbar-group">
+        <button id="boxes-btn" class="btn btn-text" title="Show page box overlays: TrimBox / BleedBox / ArtBox (B)" disabled>Boxes</button>
+      </div>
+
+      <div class="toolbar-group">
+        <button id="zoom-print" class="btn btn-text" title="Zoom to actual print size at 96 DPI (P)" disabled>1:1</button>
+      </div>
+    </header>
+
+    <!-- ── Main area ─────────────────────────────────────────────── -->
+    <div class="layout">
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+
+        <!-- Ink Coverage Statistics -->
+        <section class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Ink Coverage</span>
+            <span class="tac-badge" id="tac-badge" hidden></span>
+          </div>
+          <div class="ink-stats" id="ink-stats">
+            <p class="empty-hint">Open a PDF to see coverage.</p>
+          </div>
+        </section>
+
+        <!-- Separations -->
+        <section class="panel panel-seps">
+          <div class="panel-header">
+            <span class="panel-title">Separations</span>
+            <div class="panel-actions">
+              <button id="sep-all"  class="micro-btn" title="Enable all channels">All</button>
+              <button id="sep-none" class="micro-btn" title="Disable all channels">None</button>
+            </div>
+          </div>
+          <ul class="sep-list" id="sep-list">
+            <!-- populated dynamically by buildSeparationsPanel() -->
+          </ul>
+        </section>
+
+        <!-- Layers / OCGs -->
+        <section class="panel panel-layers">
+          <div class="panel-header">
+            <span class="panel-title">Layers</span>
+            <div class="panel-actions">
+              <button id="layer-all"  class="micro-btn" title="Show all layers">All</button>
+              <button id="layer-none" class="micro-btn" title="Hide all layers">None</button>
+            </div>
+          </div>
+          <div id="layers-list" class="layers-list">
+            <p class="empty-hint">No layers in this document</p>
+          </div>
+        </section>
+
+      </aside>
+
+      <!-- Canvas area -->
+      <main class="canvas-area" id="canvas-area">
+
+        <!-- OPP info bar — shown when overprint preview mode is active -->
+        <div class="opp-bar" id="opp-bar" hidden>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <circle cx="12" cy="16" r="1" fill="currentColor" stroke="none"/>
+          </svg>
+          Overprint Preview active — print-intent rendering (screen approximation; use Acrobat or a RIP for accurate OPP)
+        </div>
+
+        <!-- Drop zone — visible when no PDF is loaded -->
+        <div class="drop-zone" id="drop-zone">
+          <div class="drop-zone-inner">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="12" y1="18" x2="12" y2="12"/>
+              <polyline points="9 15 12 12 15 15"/>
+            </svg>
+            <p class="drop-zone-title">Open a PDF to get started</p>
+            <p class="drop-zone-sub">Click <strong>Open PDF</strong> or drag &amp; drop a file here</p>
+          </div>
+        </div>
+
+        <!-- PDF canvas — hidden until a file is loaded -->
+        <div class="canvas-wrap" id="canvas-wrap" hidden>
+          <!-- canvas-container shrink-wraps the canvas so the SVG overlay aligns exactly -->
+          <div class="canvas-container">
+            <canvas id="pdf-canvas"></canvas>
+            <!-- SVG overlay for page box guides (TrimBox, BleedBox, ArtBox) -->
+            <svg id="boxes-overlay" class="boxes-overlay" aria-hidden="true"></svg>
+            <!-- SVG overlay for persistent sample-point markers -->
+            <svg id="marks-overlay" class="marks-overlay" aria-hidden="true"></svg>
+          </div>
+        </div>
+
+        <!-- Spinner overlay — shown during loading/rendering -->
+        <div class="spinner-overlay" id="spinner" hidden>
+          <div class="spinner"></div>
+        </div>
+
+      </main>
+      <!-- ── Sample points panel (right) ─────────────────────────── -->
+      <aside class="samples-panel">
+        <div class="panel-header">
+          <span class="panel-title">Sample Points</span>
+          <button id="clear-samples" class="micro-btn micro-btn-danger" title="Remove all sample points">Clear</button>
+        </div>
+        <div id="samples-list" class="samples-list">
+          <p class="empty-hint">Eyedropper active — click on the PDF to sample ink density at that point.</p>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- ── Status bar ─────────────────────────────────────────────── -->
+    <footer class="statusbar">
+      <span id="status-msg"></span>
+    </footer>
+
+  </div>
+
+  <!-- ── Density tooltip (fixed overlay, managed by viewer.js) ─────────── -->
+  <div id="density-tooltip" class="density-tooltip" hidden>
+    <!-- Sampled colour swatch -->
+    <div class="dt-swatch" id="dt-swatch"></div>
+    <!-- CMYK channel readouts -->
+    <div class="dt-body">
+      <div class="dt-row">
+        <span class="dt-ch dt-ch-c">C</span>
+        <div class="dt-track"><div class="dt-fill dt-fill-c" id="dt-fill-c"></div></div>
+        <span class="dt-pct" id="dt-c">0%</span>
+      </div>
+      <div class="dt-row">
+        <span class="dt-ch dt-ch-m">M</span>
+        <div class="dt-track"><div class="dt-fill dt-fill-m" id="dt-fill-m"></div></div>
+        <span class="dt-pct" id="dt-m">0%</span>
+      </div>
+      <div class="dt-row">
+        <span class="dt-ch dt-ch-y">Y</span>
+        <div class="dt-track"><div class="dt-fill dt-fill-y" id="dt-fill-y"></div></div>
+        <span class="dt-pct" id="dt-y">0%</span>
+      </div>
+      <div class="dt-row">
+        <span class="dt-ch dt-ch-k">K</span>
+        <div class="dt-track"><div class="dt-fill dt-fill-k" id="dt-fill-k"></div></div>
+        <span class="dt-pct" id="dt-k">0%</span>
+      </div>
+      <div class="dt-divider"></div>
+      <div class="dt-row dt-tac-row">
+        <span class="dt-tac-label">TAC</span>
+        <span class="dt-pct dt-tac-pct" id="dt-tac">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF.js 3.x from CDN — no build step required -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="js/viewer.js"></script>
+</body>
+</html>

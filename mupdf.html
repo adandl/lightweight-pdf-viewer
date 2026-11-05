@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prepress PDF Viewer · MuPDF separations (beta)</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/mupdf.css">
+</head>
+<body>
+  <div id="mu-app">
+    <header class="toolbar">
+      <div class="toolbar-group">
+        <a class="btn" href="index.html" title="Back to the PDF.js viewer">← Classic viewer</a>
+        <span class="app-title">Separations <span class="mu-beta">MuPDF beta</span></span>
+      </div>
+      <div class="toolbar-group">
+        <label class="btn btn-open" title="Open PDF (or drag &amp; drop)">
+          Open PDF
+          <input type="file" id="mu-file" accept=".pdf" hidden>
+        </label>
+      </div>
+      <div class="toolbar-group">
+        <button class="btn" id="mu-prev" disabled title="Previous page (←)">‹</button>
+        <span id="mu-page">– / –</span>
+        <button class="btn" id="mu-next" disabled title="Next page (→)">›</button>
+      </div>
+      <div class="toolbar-group">
+        <button class="btn" id="mu-zoom-out" disabled title="Zoom out (−)">−</button>
+        <span id="mu-zoom">100%</span>
+        <button class="btn" id="mu-zoom-in" disabled title="Zoom in (+)">+</button>
+        <button class="btn" id="mu-fit" disabled title="Fit page">Fit</button>
+      </div>
+      <div class="toolbar-group">
+        <button class="btn" id="mu-boxes" disabled title="Show page boxes: Trim, Bleed, Art, Crop (B)">Boxes</button>
+        <button class="btn" id="mu-eyedropper" disabled title="Eyedropper: tap or click to pin a measurement (D)">Eyedropper</button>
+      </div>
+    </header>
+
+    <div id="mu-main">
+      <aside id="mu-sidebar">
+        <section class="mu-panel">
+          <div class="mu-panel-head">
+            <span>Separations</span>
+            <span>
+              <button class="mu-link" id="mu-all">All</button>
+              <button class="mu-link" id="mu-none">None</button>
+            </span>
+          </div>
+          <div class="mu-hint">Click a name to show that plate alone.</div>
+          <ul id="mu-seps"></ul>
+        </section>
+        <section class="mu-panel">
+          <div class="mu-panel-head">
+            <span>Layers</span>
+            <span>
+              <button class="mu-link" id="mu-layers-all">All</button>
+              <button class="mu-link" id="mu-layers-none">None</button>
+            </span>
+          </div>
+          <ul id="mu-layers"><li class="mu-hint">No layers in this document.</li></ul>
+        </section>
+        <section class="mu-panel">
+          <div class="mu-panel-head"><span>Densitometer</span><span id="mu-tac"></span></div>
+          <ul id="mu-probe"><li class="mu-hint">Move the mouse over the page, or turn on the eyedropper and tap.</li></ul>
+        </section>
+        <section class="mu-panel">
+          <div class="mu-panel-head"><span>Samples</span><button class="mu-link" id="mu-clear-samples">Clear</button></div>
+          <div id="mu-samples"><div class="mu-hint">Turn on the eyedropper and tap or click the page to pin a measurement.</div></div>
+        </section>
+      </aside>
+
+      <div id="mu-area">
+        <div id="mu-drop">
+          <p>Drop a PDF here or use “Open PDF”.</p>
+          <p class="mu-hint">Rendering runs locally in your browser with MuPDF (WebAssembly). Nothing is uploaded.</p>
+        </div>
+        <div id="mu-stage" hidden>
+          <canvas id="mu-canvas"></canvas>
+          <svg id="mu-boxes-overlay" class="mu-overlay" aria-hidden="true"></svg>
+          <svg id="mu-marks" class="mu-overlay" aria-hidden="true"></svg>
+        </div>
+      </div>
+    </div>
+
+    <footer class="statusbar">
+      <span id="mu-status">Loading MuPDF…</span>
+      <span class="mu-license">Rendering by <a href="https://mupdf.com/" target="_blank" rel="noopener">MuPDF</a> (AGPL-3.0) ·
+        <a href="https://github.com/adandl/lightweight-pdf-viewer" target="_blank" rel="noopener">source code</a></span>
+    </footer>
+  </div>
+
+  <script type="module" src="js/mupdf-viewer.js"></script>
+</body>
+</html>

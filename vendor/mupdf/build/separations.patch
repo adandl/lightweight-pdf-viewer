@@ -1,0 +1,121 @@
+diff --git a/platform/wasm/lib/mupdf.c b/platform/wasm/lib/mupdf.c
+index 8676be8..3eb01df 100644
+--- a/platform/wasm/lib/mupdf.c
++++ b/platform/wasm/lib/mupdf.c
+@@ -2948,3 +2948,72 @@ fz_device *wasm_new_js_device(int id)
+ 
+ 	return (fz_device*)dev;
+ }
++
++// --- SEPARATIONS (lightweight-PDF addition) ---
++
++static float out_sep_color[4];
++
++EXPORT
++fz_pixmap * wasm_pdf_new_separations_pixmap_from_page(pdf_page *page, fz_matrix *ctm, char *usage, int box)
++{
++	fz_separations *seps = NULL;
++	fz_pixmap *pix = NULL;
++	fz_device *dev = NULL;
++	fz_var(seps);
++	fz_var(pix);
++	fz_var(dev);
++	fz_try(ctx)
++	{
++		int i, n;
++		fz_irect bbox = fz_round_rect(fz_transform_rect(pdf_bound_page(ctx, page, box), *ctm));
++		seps = pdf_page_separations(ctx, page);
++		if (!seps)
++			seps = fz_new_separations(ctx, 0);
++		n = fz_count_separations(ctx, seps);
++		for (i = 0; i < n; ++i)
++			fz_set_separation_behavior(ctx, seps, i, FZ_SEPARATION_SPOT);
++		pix = fz_new_pixmap_with_bbox(ctx, fz_device_cmyk(ctx), bbox, seps, 0);
++		fz_clear_pixmap(ctx, pix);
++		dev = fz_new_draw_device(ctx, fz_identity, pix);
++		pdf_run_page_with_usage(ctx, page, dev, *ctm, usage, NULL);
++		fz_close_device(ctx, dev);
++	}
++	fz_always(ctx)
++	{
++		fz_drop_device(ctx, dev);
++		fz_drop_separations(ctx, seps);
++	}
++	fz_catch(ctx)
++	{
++		fz_drop_pixmap(ctx, pix);
++		wasm_rethrow(ctx);
++	}
++	return pix;
++}
++
++EXPORT
++int wasm_pixmap_count_separations(fz_pixmap *pix)
++{
++	INTEGER(fz_count_separations, pix->seps)
++}
++
++EXPORT
++const char * wasm_pixmap_separation_name(fz_pixmap *pix, int i)
++{
++	POINTER(fz_separation_name, pix->seps, i)
++}
++
++EXPORT
++float * wasm_pixmap_separation_equivalent(fz_pixmap *pix, int i, int cmyk)
++{
++	TRY({
++		fz_separation_equivalent(ctx, pix->seps, i, cmyk ? fz_device_cmyk(ctx) : fz_device_rgb(ctx), out_sep_color, NULL, fz_default_color_params);
++	})
++	return out_sep_color;
++}
++
++EXPORT
++boolean wasm_page_uses_overprint(fz_page *page)
++{
++	BOOLEAN(fz_page_uses_overprint, page)
++}
+diff --git a/platform/wasm/lib/mupdf.ts b/platform/wasm/lib/mupdf.ts
+index dfe3052..0bc8d62 100644
+--- a/platform/wasm/lib/mupdf.ts
++++ b/platform/wasm/lib/mupdf.ts
+@@ -1421,6 +1421,21 @@ export class Pixmap extends Userdata<"fz_pixmap"> {
+ 		return null
+ 	}
+ 
++	/** lightweight-PDF addition: list the spot separations carried by this pixmap. */
++	getSeparations() {
++		let n = libmupdf._wasm_pixmap_count_separations(this.pointer)
++		let out: { name: string, rgb: number[], cmyk: number[] }[] = []
++		for (let i = 0; i < n; ++i) {
++			let name = fromString(libmupdf._wasm_pixmap_separation_name(this.pointer, i))
++			let p = libmupdf._wasm_pixmap_separation_equivalent(this.pointer, i, 0) >> 2
++			let rgb = [ libmupdf.HEAPF32[p]!, libmupdf.HEAPF32[p+1]!, libmupdf.HEAPF32[p+2]! ]
++			p = libmupdf._wasm_pixmap_separation_equivalent(this.pointer, i, 1) >> 2
++			let cmyk = [ libmupdf.HEAPF32[p]!, libmupdf.HEAPF32[p+1]!, libmupdf.HEAPF32[p+2]!, libmupdf.HEAPF32[p+3]! ]
++			out.push({ name, rgb, cmyk })
++		}
++		return out
++	}
++
+ 	getPixels() {
+ 		let s = libmupdf._wasm_pixmap_get_stride(this.pointer)
+ 		let h = libmupdf._wasm_pixmap_get_h(this.pointer)
+@@ -2996,6 +3011,17 @@ export class PDFPage extends Page {
+ 		return new Pixmap(result)
+ 	}
+ 
++	/** lightweight-PDF addition: render into a DeviceCMYK + spot pixmap with overprint simulation. */
++	toSeparationsPixmap(matrix: Matrix, usage = "View", box: PageBox = "CropBox") {
++		checkMatrix(matrix)
++		let box_ix = ENUM<PageBox>(box, Page.BOXES)
++		return new Pixmap(libmupdf._wasm_pdf_new_separations_pixmap_from_page(this.pointer, MATRIX(matrix), STRING(usage), box_ix))
++	}
++
++	usesOverprint() {
++		return !!libmupdf._wasm_page_uses_overprint(this.pointer as any)
++	}
++
+ 	getWidgets() {
+ 		if (!this._widgets) {
+ 			this._widgets = []

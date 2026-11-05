@@ -1,0 +1,897 @@
+/* ── Reset & base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/*
+ * IMPORTANT: several elements use display:flex but are toggled with the HTML
+ * `hidden` attribute.  The UA stylesheet sets [hidden]{display:none} at low
+ * specificity, so author display rules would override it.  This rule fixes
+ * that for the entire document.
+ */
+[hidden] { display: none !important; }
+
+:root {
+  --bg-app:       #1a1b1e;
+  --bg-toolbar:   #25262b;
+  --bg-sidebar:   #1e2024;
+  --bg-panel:     #25262b;
+  --bg-canvas:    #111214;
+  --bg-hover:     #2c2e33;
+  --bg-active:    #373a40;
+
+  --border:       #373a40;
+  --border-sub:   #2c2e33;
+
+  --text:         #c9cdd4;
+  --text-muted:   #868e96;
+  --text-dim:     #5c6370;
+
+  --accent:       #4dabf7;
+  --accent-dim:   rgba(28, 126, 214, 0.12);
+
+  --swatch-c: #06b6d4;
+  --swatch-m: #ec4899;
+  --swatch-y: #fbbf24;
+  --swatch-k: #9ca3af;
+
+  --sidebar-w:   240px;
+  --samples-w:   200px;
+  --toolbar-h:    48px;
+  --status-h:     26px;
+  --r:  6px;
+  --rs: 4px;
+
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+
+  --site-header-h: 56px;
+}
+
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: var(--font);
+  font-size: 13px;
+  background: var(--bg-app);
+  color: var(--text);
+  line-height: 1.4;
+}
+
+/* ── App shell ────────────────────────────────────────────────────────────── */
+#app {
+  display: grid;
+  grid-template-rows: var(--site-header-h) var(--toolbar-h) 1fr var(--status-h);
+  height: 100vh;
+}
+
+/* ── Site header (dandl.at branding) ─────────────────────────────────────── */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: #fff;
+  border-bottom: 1px solid #e2e2e2;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.site-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #999;
+  text-decoration: none;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: color 0.18s;
+  min-width: 120px;
+}
+.site-back:hover { color: #1a1a1a; }
+.site-back svg   { flex-shrink: 0; }
+
+.site-logo-link  { display: flex; line-height: 0; text-decoration: none; }
+.site-logo-svg   { display: block; }
+
+.site-section {
+  min-width: 120px;
+  text-align: right;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #bbb;
+}
+
+/* ── Toolbar ──────────────────────────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px;
+  background: var(--bg-toolbar);
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.toolbar-group + .toolbar-group {
+  margin-left: 6px;
+  padding-left: 10px;
+  border-left: 1px solid var(--border);
+}
+
+.app-logo { display: flex; align-items: center; color: var(--accent); }
+.app-title { font-weight: 600; font-size: 13px; white-space: nowrap; margin-left: 6px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  background: var(--bg-active);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s, border-color 0.12s;
+}
+.btn:hover  { background: var(--bg-hover); border-color: #4c5058; }
+.btn:active { background: var(--border); }
+
+.btn-open {
+  background: var(--accent);
+  border-color: transparent;
+  color: #fff;
+  font-weight: 600;
+}
+.btn-open:hover  { background: #339af0; border-color: transparent; }
+.btn-open:active { background: #228be6; }
+
+.btn-icon {
+  padding: 5px 6px;
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-muted);
+}
+.btn-icon:hover           { background: var(--bg-hover); border-color: var(--border); color: var(--text); }
+.btn-icon:disabled        { opacity: 0.35; cursor: not-allowed; }
+.btn-icon:disabled:hover  { background: transparent; border-color: transparent; }
+
+.btn-text {
+  padding: 5px 8px;
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.btn-text:hover           { background: var(--bg-hover); border-color: var(--border); color: var(--text); }
+.btn-text:disabled        { opacity: 0.35; cursor: not-allowed; }
+.btn-text:disabled:hover  { background: transparent; border-color: transparent; }
+
+.page-info {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  min-width: 60px;
+  text-align: center;
+}
+
+.zoom-level {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  min-width: 38px;
+  text-align: center;
+}
+
+/* ── Layout ───────────────────────────────────────────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr var(--samples-w);
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────────────────── */
+.sidebar {
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar::-webkit-scrollbar       { width: 6px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Panels */
+.panel { flex-shrink: 0; }
+.panel + .panel { border-top: 1px solid var(--border); }
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px 7px;
+}
+
+.panel-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.panel-actions { display: flex; gap: 4px; }
+
+.micro-btn {
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-dim);
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+.micro-btn:hover { background: var(--bg-hover); color: var(--text-muted); }
+
+/* Separations */
+/* Takes the height Layers doesn't need and scrolls on its own, so a document
+   with many inks can't push the Layers panel out of view. */
+.panel-seps {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 120px;
+}
+
+.sep-list {
+  list-style: none;
+  padding: 4px 0 8px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.sep-list::-webkit-scrollbar       { width: 5px; }
+.sep-list::-webkit-scrollbar-track { background: transparent; }
+.sep-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.sep-item { padding: 1px 0; }
+
+.sep-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.sep-label:hover { background: var(--bg-hover); }
+
+/* Custom checkbox */
+.sep-label input[type="checkbox"],
+.layer-row  input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  border: 1.5px solid var(--border);
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: background 0.12s, border-color 0.12s;
+}
+.sep-label input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.layer-row input[type="checkbox"]:checked {
+  background: #69db7c;
+  border-color: #69db7c;
+}
+.sep-label input[type="checkbox"]:checked::after,
+.layer-row  input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 3px; top: 1px;
+  width: 6px; height: 10px;
+  border: 2px solid #fff;
+  border-top: none; border-left: none;
+  transform: rotate(45deg) scaleY(0.85);
+}
+
+/* Color swatches */
+.swatch {
+  width: 28px; height: 14px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.swatch-c { background: var(--swatch-c); }
+.swatch-m { background: var(--swatch-m); }
+.swatch-y { background: var(--swatch-y); }
+.swatch-k { background: var(--swatch-k); }
+
+/* Dim swatch + name when channel is off */
+.sep-label:has(input:not(:checked)) .swatch   { opacity: 0.2; }
+.sep-label:has(input:not(:checked)) .sep-name { opacity: 0.38; }
+
+.sep-name { font-size: 13px; color: var(--text); }
+
+/* Layers */
+.panel-layers {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  max-height: 40%;
+}
+
+.layers-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 0 8px;
+}
+.layers-list::-webkit-scrollbar       { width: 5px; }
+.layers-list::-webkit-scrollbar-track { background: transparent; }
+.layers-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.layer-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.layer-row:hover { background: var(--bg-hover); }
+
+.layer-name {
+  font-size: 12px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty-hint {
+  padding: 12px;
+  font-size: 12px;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* ── Canvas area ──────────────────────────────────────────────────────────── */
+.canvas-area {
+  position: relative;
+  background: var(--bg-canvas);
+  overflow: auto;
+}
+
+.canvas-area::-webkit-scrollbar        { width: 10px; height: 10px; }
+.canvas-area::-webkit-scrollbar-track  { background: var(--bg-canvas); }
+.canvas-area::-webkit-scrollbar-thumb  { background: #373a40; border-radius: 5px; border: 2px solid var(--bg-canvas); }
+.canvas-area::-webkit-scrollbar-corner { background: var(--bg-canvas); }
+
+/* Copyright watermark — fixed in the bottom-right corner of the canvas area */
+#canvas-area::after {
+  content: 'Peter Zeppezauer / Albert Dandl \00A9 2026';
+  position: fixed;
+  bottom: calc(var(--status-h) + 10px);
+  right: calc(var(--samples-w) + 14px);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.13);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* Drop zone */
+.drop-zone {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, outline-color 0.15s;
+}
+.drop-zone.drag-active {
+  background: var(--accent-dim);
+  outline: 2px dashed var(--accent);
+  outline-offset: -12px;
+}
+
+.drop-zone-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-dim);
+  text-align: center;
+  pointer-events: none;
+}
+.drop-zone-inner svg   { opacity: 0.3; margin-bottom: 4px; }
+.drop-zone-title       { font-size: 15px; font-weight: 600; color: var(--text-muted); }
+.drop-zone-sub         { font-size: 12px; color: var(--text-dim); }
+.drop-zone-sub strong  { color: var(--text-muted); }
+
+/* Canvas wrapper */
+.canvas-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+  min-width: max-content;
+}
+
+#pdf-canvas {
+  display: block;
+  background: #fff;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.55);
+  /* Crisp pixel rendering for colour-accurate prepress work */
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+/* ── Spinner overlay ──────────────────────────────────────────────────────── */
+.spinner-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.42);
+  z-index: 20;
+}
+
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid rgba(255,255,255,0.1);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Status bar ───────────────────────────────────────────────────────────── */
+.statusbar {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  background: var(--bg-toolbar);
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+#status-msg {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Eyedropper tool ──────────────────────────────────────────────────────── */
+
+/* Active (toggled-on) state for the eyedropper button */
+.btn-icon.btn-active {
+  background: var(--accent-dim);
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+.btn-icon.btn-active:hover {
+  background: rgba(28, 126, 214, 0.2);
+}
+
+/* Crosshair cursor on the canvas while the eyedropper is active */
+.canvas-area.eyedropper-active         { cursor: crosshair; }
+.canvas-area.eyedropper-active #pdf-canvas { cursor: crosshair; }
+
+/* ── Density tooltip ──────────────────────────────────────────────────────── */
+.density-tooltip {
+  position: fixed;
+  z-index: 1000;
+  width: 192px;
+  background: #1e2024;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.55);
+  overflow: hidden;
+  pointer-events: none; /* never blocks mouse events on the canvas */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sampled colour swatch at the top */
+.dt-swatch {
+  height: 30px;
+  flex-shrink: 0;
+  background: #fff; /* overridden dynamically */
+  border-bottom: 1px solid var(--border);
+}
+
+/* Channel rows */
+.dt-body {
+  padding: 8px 10px 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.dt-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Channel letter label, coloured per ink */
+.dt-ch {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  width: 12px;
+  flex-shrink: 0;
+  text-align: center;
+}
+.dt-ch-c { color: var(--swatch-c); }
+.dt-ch-m { color: var(--swatch-m); }
+.dt-ch-y { color: var(--swatch-y); }
+.dt-ch-k { color: var(--swatch-k); }
+
+/* Mini progress bar */
+.dt-track {
+  flex: 1;
+  height: 5px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.dt-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 3px;
+  transition: width 0.04s linear;
+}
+.dt-fill-c { background: var(--swatch-c); }
+.dt-fill-m { background: var(--swatch-m); }
+.dt-fill-y { background: var(--swatch-y); }
+.dt-fill-k { background: var(--swatch-k); }
+
+/* Percentage label */
+.dt-pct {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  min-width: 34px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Divider between channels and TAC */
+.dt-divider {
+  height: 1px;
+  background: var(--border-sub);
+  margin: 2px 0 1px;
+}
+
+/* TAC row — Total Area Coverage */
+.dt-tac-row { justify-content: space-between; }
+
+.dt-tac-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.dt-tac-pct { color: var(--text); font-weight: 600; }
+
+/* ── Canvas container + marks overlay ────────────────────────────────────── */
+
+/*
+ * Shrink-wraps around the canvas so the SVG overlay can use
+ * position:absolute and cover exactly the canvas area.
+ */
+.canvas-container {
+  position: relative;
+  display: inline-block; /* hug canvas dimensions */
+  line-height: 0;        /* kill inline gap below canvas */
+}
+
+/*
+ * SVG overlay for persistent sample-point crosses.
+ * pointer-events:none so all mouse events pass through to the canvas.
+ */
+.marks-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  overflow: visible; /* allow badges that sit outside the mark pixel to show */
+}
+
+/* ── Sample points panel (right sidebar) ─────────────────────────────────── */
+.samples-panel {
+  background: var(--bg-sidebar);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.samples-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0 8px;
+}
+.samples-list::-webkit-scrollbar       { width: 5px; }
+.samples-list::-webkit-scrollbar-track { background: transparent; }
+.samples-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* "Danger" tint for the Clear button */
+.micro-btn-danger       { color: #fa5252; border-color: rgba(250,82,82,0.3); }
+.micro-btn-danger:hover { background: rgba(250,82,82,0.12); color: #ff6b6b; border-color: #fa5252; }
+
+/* Individual sample entry */
+.sample-item {
+  padding: 8px 10px 7px;
+  border-bottom: 1px solid var(--border-sub);
+}
+.sample-item:last-child { border-bottom: none; }
+
+.sample-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+/* Numbered badge matching the SVG cross badge colour */
+.sample-badge {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  font-family: var(--mono);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sample-swatch {
+  width: 22px; height: 13px;
+  border-radius: 2px;
+  border: 1px solid rgba(255,255,255,0.1);
+  flex-shrink: 0;
+}
+
+.sample-page {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--text-dim);
+  flex: 1;
+}
+
+.sample-del {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 3px;
+  border-radius: 3px;
+  transition: background 0.1s, color 0.1s;
+}
+.sample-del:hover { background: rgba(250,82,82,0.15); color: #ff6b6b; }
+
+/* CMYK value rows inside each sample */
+.sv-rows { display: flex; flex-direction: column; gap: 2px; }
+
+.sv-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sv-ch {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  width: 11px;
+  flex-shrink: 0;
+}
+.sv-c { color: var(--swatch-c); }
+.sv-m { color: var(--swatch-m); }
+.sv-y { color: var(--swatch-y); }
+.sv-k { color: var(--swatch-k); }
+
+.sv-bar-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.sv-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+.sv-bar-c { background: var(--swatch-c); }
+.sv-bar-m { background: var(--swatch-m); }
+.sv-bar-y { background: var(--swatch-y); }
+.sv-bar-k { background: var(--swatch-k); }
+
+.sv-pct {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  min-width: 30px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* TAC row */
+.sv-tac {
+  margin-top: 3px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border-sub);
+  justify-content: space-between;
+}
+.sv-tac-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.sv-tac .sv-pct { color: var(--text); font-weight: 600; min-width: auto; }
+
+/* ── Boxes overlay (page guides: Trim / Bleed / Art / Crop) ─────────────── */
+.boxes-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* ── OPP info bar ─────────────────────────────────────────────────────────── */
+.opp-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  background: rgba(77, 171, 247, 0.10);
+  border-bottom: 1px solid rgba(77, 171, 247, 0.28);
+  color: var(--accent);
+  font-size: 11px;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Ink Coverage panel ───────────────────────────────────────────────────── */
+.tac-badge {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+}
+.tac-badge-warn {
+  background: rgba(250, 82, 82, 0.18);
+  color: #ff6b6b;
+  border: 1px solid rgba(250, 82, 82, 0.35);
+}
+
+.ink-stats { padding: 4px 0 8px; }
+
+.ink-ch-rows {
+  padding: 2px 12px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ink-ch-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ink-ch-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  width: 11px;
+  flex-shrink: 0;
+}
+
+.ink-ch-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.ink-ch-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.2s;
+}
+
+.ink-ch-pct {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  min-width: 30px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.ink-tac-block {
+  margin: 6px 12px 2px;
+  padding: 5px 8px;
+  border-radius: var(--rs);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-sub);
+}
+
+.ink-tac-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-muted);
+  padding: 1px 0;
+}
+.ink-tac-row strong { color: var(--text); font-weight: 600; }
+
+.ink-tac-block.tac-warn { border-color: rgba(250, 82, 82, 0.35); }
+.ink-tac-over           { color: #ff6b6b !important; }
+.ink-tac-over strong    { color: #ff6b6b !important; }
+
+/* ── Spot colour swatch fallback (no known colour) ────────────────────────── */
+.swatch-spot-unknown {
+  background: repeating-linear-gradient(
+    45deg,
+    #555 0, #555 3px,
+    #333 3px, #333 6px
+  );
+}
+
+/* ── Spot colour section divider inside sep-list ──────────────────────────── */
+.sep-divider {
+  height: 1px;
+  background: var(--border-sub);
+  margin: 4px 12px;
+  list-style: none;
+}
+
+/* Link styled as a button (e.g. "Separations (MuPDF beta)") */
+a.btn { text-decoration: none; }

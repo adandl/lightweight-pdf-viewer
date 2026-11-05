@@ -1,0 +1,103 @@
+/* ── MuPDF separations prototype (mupdf.html) ─────────────────────────────── */
+#mu-app {
+  display: grid;
+  grid-template-rows: var(--toolbar-h) 1fr var(--status-h);
+  height: 100vh;
+}
+#mu-app a.btn { text-decoration: none; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn.btn-active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+.mu-beta {
+  font-size: 10px; font-weight: 600; color: var(--accent);
+  border: 1px solid var(--accent); border-radius: 4px; padding: 0 4px; margin-left: 4px;
+}
+#mu-page, #mu-zoom { min-width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
+
+#mu-main { display: grid; grid-template-columns: 260px 1fr; min-height: 0; }
+#mu-sidebar {
+  background: var(--bg-sidebar); border-right: 1px solid var(--border);
+  overflow-y: auto; min-height: 0;
+}
+.mu-panel { border-bottom: 1px solid var(--border); padding: 8px 10px 10px; }
+.mu-panel-head {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--text-muted); margin-bottom: 4px;
+}
+.mu-link {
+  background: none; border: 0; color: var(--accent); font: inherit; font-size: 11px;
+  cursor: pointer; padding: 0 3px; text-transform: none; letter-spacing: 0;
+}
+.mu-hint { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; }
+
+#mu-seps, #mu-probe { list-style: none; }
+#mu-seps li, #mu-probe li {
+  display: grid; grid-template-columns: 16px 14px 1fr auto; gap: 6px; align-items: center;
+  padding: 3px 2px; border-radius: 4px; font-size: 12px;
+}
+#mu-probe li { grid-template-columns: 14px 1fr auto; }
+#mu-probe li.mu-hint { display: block; }
+#mu-seps li:hover { background: var(--bg-hover); }
+#mu-seps input { margin: 0; accent-color: var(--accent); }
+.mu-swatch { width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(255,255,255,.15); }
+.mu-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.mu-name:hover { color: #fff; }
+.mu-val { color: var(--text-muted); font-variant-numeric: tabular-nums; font-size: 11px; }
+#mu-tac { text-transform: none; letter-spacing: 0; font-variant-numeric: tabular-nums; }
+#mu-tac.mu-warn { color: #ff6b6b; }
+
+#mu-area {
+  position: relative; overflow: auto; background: var(--bg-canvas); min-height: 0;
+  display: grid; place-items: center; padding: 24px;
+}
+#mu-area.mu-dragover { outline: 2px dashed var(--accent); outline-offset: -8px; }
+#mu-drop { text-align: center; color: var(--text-muted); }
+#mu-drop p + p { margin-top: 6px; }
+#mu-canvas { box-shadow: 0 2px 16px rgba(0,0,0,.5); background: #fff; image-rendering: auto; cursor: crosshair; }
+
+.statusbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.mu-license { color: var(--text-dim); font-size: 11px; }
+.mu-license a { color: var(--text-muted); }
+
+@media (max-width: 700px) {
+  #mu-main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  #mu-sidebar { max-height: 35vh; border-right: 0; border-bottom: 1px solid var(--border); }
+  .toolbar { overflow-x: auto; }
+}
+
+/* ── Eyedropper & samples ─────────────────────────────────────────────────── */
+#mu-stage { position: relative; line-height: 0; }
+#mu-canvas { display: block; }
+.mu-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+#mu-stage.mu-eyedropper #mu-canvas { touch-action: none; cursor: crosshair; }
+#mu-stage:not(.mu-eyedropper) #mu-canvas { cursor: default; }
+
+.mu-sample { border-top: 1px solid var(--border-sub); padding: 6px 0; }
+.mu-sample:first-child { border-top: 0; }
+.mu-sample-head { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 12px; }
+.mu-badge {
+  width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: #fff;
+  font-size: 10px; font-weight: 700; display: grid; place-items: center; flex-shrink: 0;
+}
+.mu-sample-swatch { width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(255,255,255,.2); }
+.mu-sample-tac { margin-left: auto; color: var(--text-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.mu-sample-tac.mu-warn { color: #ff6b6b; }
+.mu-del {
+  background: none; border: 0; color: var(--text-dim); cursor: pointer; font-size: 13px;
+  padding: 2px 6px; border-radius: 4px;
+}
+.mu-del:hover { color: #ff6b6b; background: rgba(250,82,82,.15); }
+.mu-sv { display: grid; grid-template-columns: 12px minmax(0,1fr) 54px 44px; gap: 6px; align-items: center; font-size: 11px; padding: 1px 0; }
+.mu-sv .mu-name { cursor: default; }
+.mu-bar { height: 5px; background: var(--bg-active); border-radius: 3px; overflow: hidden; }
+.mu-bar > span { display: block; height: 100%; }
+.mu-sv .mu-val { text-align: right; }
+
+/* ── Layers & boxes ───────────────────────────────────────────────────────── */
+#mu-layers { list-style: none; }
+#mu-layers li { display: grid; grid-template-columns: 16px 1fr; gap: 6px; align-items: center; padding: 3px 2px; border-radius: 4px; font-size: 12px; }
+#mu-layers li.mu-hint { display: block; }
+#mu-layers li:hover { background: var(--bg-hover); }
+#mu-layers label { display: contents; cursor: pointer; }
+#mu-layers input { margin: 0; accent-color: var(--accent); }
+#mu-boxes-overlay text { font-family: ui-monospace, Menlo, monospace; font-size: 10px; paint-order: stroke; stroke: rgba(0,0,0,.55); stroke-width: 2px; stroke-linejoin: round; }
