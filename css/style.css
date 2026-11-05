@@ -61,6 +61,7 @@ body {
   display: grid;
   grid-template-rows: var(--site-header-h) var(--toolbar-h) 1fr var(--status-h);
   height: 100vh;
+  height: 100dvh; /* iPad/iPhone: keep the footer above the browser toolbar */
 }
 
 /* ── Site header (dandl.at branding) ─────────────────────────────────────── */
@@ -483,6 +484,8 @@ body {
 }
 
 #status-msg {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -895,3 +898,7 @@ body {
 
 /* Link styled as a button (e.g. "Separations (MuPDF beta)") */
 a.btn { text-decoration: none; }
+
+/* Source / license link in the status bar (AGPL: source must be offered to users) */
+.statusbar-source { margin-left: 12px; flex-shrink: 0; white-space: nowrap; font-size: 11px; color: var(--text-dim); }
+.statusbar-source a { color: var(--text-muted); }

@@ -3,6 +3,7 @@
   display: grid;
   grid-template-rows: var(--toolbar-h) 1fr var(--status-h);
   height: 100vh;
+  height: 100dvh; /* iPad/iPhone: keep the footer above the browser toolbar */
 }
 #mu-app a.btn { text-decoration: none; }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -55,8 +56,9 @@
 #mu-drop p + p { margin-top: 6px; }
 #mu-canvas { box-shadow: 0 2px 16px rgba(0,0,0,.5); background: #fff; image-rendering: auto; cursor: crosshair; }
 
-.statusbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.mu-license { color: var(--text-dim); font-size: 11px; }
+.statusbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-width: 0; }
+#mu-status { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mu-license { color: var(--text-dim); font-size: 11px; flex-shrink: 0; white-space: nowrap; }
 .mu-license a { color: var(--text-muted); }
 
 @media (max-width: 700px) {
